@@ -4,7 +4,6 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from datetime import datetime
 from urllib.parse import urlparse
-import os
 
 
 
@@ -12,11 +11,20 @@ import os
 def get_tweets_by_username(username, leaning):
     array = []
     url = f'https://nitter.rawbit.ninja/{username}'
+    urls = set()
 
-    end_date = datetime(2023, 11, 1)
+    end_date = datetime(2023, 11, 15)
+    driver = webdriver.Chrome()
 
     while True:
-        driver = webdriver.Chrome()
+        if(not urls.__contains__(url)):
+            urls.add(url)
+        else:
+            print("Reached the end date.")
+            df = pd.DataFrame(array)
+            df.to_csv(f'{username}.csv')
+            url = f'https://nitter.rawbit.ninja/{username}'
+            return
         driver.get(url)
 
         elements = driver.find_elements(By.CLASS_NAME, 'timeline-item')
@@ -29,15 +37,27 @@ def get_tweets_by_username(username, leaning):
                 date_soup = BeautifulSoup(date_html, 'html.parser')
                 date_str = date_soup.a['title']
 
-                # Parse the date string into a datetime object
-                tweet_date = datetime.strptime(date_str, "%b %d, %Y · %I:%M %p UTC")
+                try:
+                    div.find_element(By.CLASS_NAME, 'pinned')
+                except:
+                    try:
+                        div.find_element(By.CLASS_NAME, 'retweet-header')
+                    except:
+                            try:
+                                div.find_element(By.CLASS_NAME, 'quote')
+                            except:
+                                tweet_date = datetime.strptime(date_str, "%b %d, %Y · %I:%M %p UTC")
+
+                                    
 
                 # Break the loop if the tweet is before the end date
-                if tweet_date < end_date:
-                    driver.close()
+                if tweet_date < end_date or len(array) >= 800:
+                    # driver.close()
+                    print(div.get_attribute('innerHTML'))
                     print("Reached the end date.")
                     df = pd.DataFrame(array)
                     df.to_csv(f'{username}.csv')
+                    url = f'https://nitter.rawbit.ninja/{username}'
                     return
 
                 # Process the tweet
@@ -81,14 +101,16 @@ def get_tweets_by_username(username, leaning):
             url = resulting_link
         except:
             print("No more tweets to load or unable to load more.")
+            df = pd.DataFrame(array)
+            df.to_csv(f'{username}.csv')
+            url = f'https://nitter.rawbit.ninja/{username}'
             break
 
-        driver.close()
+        # driver.close()
 
     # Save the data to a CSV file once the loop ends
     df = pd.DataFrame(array)
-    print()
-    df.to_csv(f'{leaning}/{username}.csv')
+    df.to_csv(f'{username}.csv')
 
 
 
