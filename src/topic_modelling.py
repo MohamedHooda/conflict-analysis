@@ -1,3 +1,8 @@
+"""
+Module for topic modelling functions. 
+Functions starting with _ are not meant to be called directly but rather are helper functions for use inside the module
+"""
+
 import gensim
 import nltk
 from gensim.utils import simple_preprocess
@@ -63,12 +68,15 @@ def gensim_topic_modelling(tweet_list, num_topics=5, visualize = True, filepath=
     return lda_model
 
 def bertopic_topic_modelling(tweet_list, visualize=False, filepath=""):
-    # Fine-tune your topic representations
+    # Instantiate a representation model to improve representations of tokens in each topic
     representation_model = KeyBERTInspired()
+    # Instantiate a tokenizer model
     vectorizer_model = CountVectorizer(ngram_range=(1, 2), stop_words="english")
+    # Instantiate BERTopic model
     topic_model = BERTopic(representation_model=representation_model, 
                            vectorizer_model=vectorizer_model,
                            language="english") 
+    # Fine-tune topic representations
     topics, probs = topic_model.fit_transform(tweet_list)       
     return topic_model, topics, probs   
 
@@ -106,17 +114,10 @@ def tomotopy_LDA(tweet_list, num_topics, num_iterations, step_size=10, print_out
     return mdl    
 
 def tomotopy_CTM(tweet_list, n_topics, min_df=5, rm_top=40):
-    #TODO: clean
-    print("here")
     corpus = _tomotopy_corpus(tweet_list)
-    print("here")
     mdl = tp.CTModel(min_df=min_df, rm_top=rm_top, k=n_topics, corpus=corpus)
-    print("starting tomotopys")
     mdl.train(0)
 
-    # Since we have more than ten thousand of documents, 
-    # setting the `num_beta_sample` smaller value will not cause an inaccurate result.
-    mdl.num_beta_sample = 5
     print('Num docs:{}, Num Vocabs:{}, Total Words:{}'.format(
         len(mdl.docs), len(mdl.used_vocabs), mdl.num_words
     ))
@@ -144,24 +145,18 @@ def tomotopy_CTM(tweet_list, n_topics, min_df=5, rm_top=40):
 
     g.barnes_hut(gravity=-1000, spring_length=20)
     g.show_buttons()
-    #g.show("topic_network.html")
-    return g
+    g.show("topic_network.html")
 
 
 def _tomotopy_corpus(tweet_list):
     porter_stemmer = nltk.PorterStemmer().stem
-    print("here1")
     english_stops = set(porter_stemmer(w) for w in stopwords.words('english'))
-    print("here2")
     pat = re.compile('^[a-z]{2,}$')
-    print("here3")
     corpus = tp.utils.Corpus(
         tokenizer=tp.utils.SimpleTokenizer(porter_stemmer), 
         stopwords=lambda x: x in english_stops or not pat.match(x)
     )
-    print("here4")
     corpus.process(tweet_list)  
-    print("here5")
     return corpus 
         
 def _sent_to_words(sentences):
