@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency, f_oneway, ttest_ind, fisher_exact, wilcoxon, mannwhitneyu
 
+
 def one_way_anova(*groups, alpha):
     # Perform one-way ANOVA
     f_statistic, p_value = f_oneway(*groups)
@@ -15,6 +16,7 @@ def one_way_anova(*groups, alpha):
         print("Reject the null hypothesis. There is a significant difference between at least two groups.")
     else:
         print("Fail to reject the null hypothesis. There is no significant difference between the groups.")
+
 
 def pairwise_t_tests(data, alpha):
     """
@@ -40,10 +42,12 @@ def pairwise_t_tests(data, alpha):
 
             # Interpret the results
             if p_value < alpha:
-                groups_with_differences.append(str(groups[i])+" and " + str(groups[j]))
+                groups_with_differences.append(
+                    str(groups[i])+" and " + str(groups[j]))
             else:
-                groups_without_differences.append(str(groups[i])+" and " + str(groups[j]))
-            
+                groups_without_differences.append(
+                    str(groups[i])+" and " + str(groups[j]))
+
             # Store results in a dictionary
             result_dict = {
                 'Group1': groups[i],
@@ -54,9 +58,10 @@ def pairwise_t_tests(data, alpha):
 
             results.append(result_dict)
 
-    print("groups with significant differences: ",groups_with_differences)
+    print("groups with significant differences: ", groups_with_differences)
     print("group wihout signifcant difference: ", groups_without_differences)
     return results
+
 
 def chi_square_test(group1_labels, group2_labels, alpha):
     """
@@ -77,7 +82,6 @@ def chi_square_test(group1_labels, group2_labels, alpha):
     # Perform chi-square test
     chi2, p, _, _ = chi2_contingency(contingency_table)
 
-    
     print("p-value:", p)
     # Check p-value to determine significance
     if p < alpha:
@@ -112,7 +116,8 @@ def fishers_exact_test(group1_labels, group2_labels, alpha):
         print("There is a significant difference between the groups.")
     else:
         print("There is no significant difference between the groups.")
-        
+
+
 def paired_mannwhitneyu_rank_test(sample1, sample2, alpha):
 
     # Perform Wilcoxon signed-rank test
@@ -121,9 +126,9 @@ def paired_mannwhitneyu_rank_test(sample1, sample2, alpha):
     # Print the results
     print("Mann-Whitney U statistic:", statistic)
     print("p-value:", p_value)
-    
+
     # Interpret the results
     if p_value < alpha:
         print("Reject the null hypothesis. There is a significant difference between the paired samples.")
     else:
-        print("Fail to reject the null hypothesis. There is no significant difference between the paired samples.")        
+        print("Fail to reject the null hypothesis. There is no significant difference between the paired samples.")
