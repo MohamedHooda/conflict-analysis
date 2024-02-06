@@ -3,3 +3,15 @@ beautifulsoup4
 selenium
 pandas
 nitter-scraper
+matplotlib
+bertopic
+scipy
+transformers
+gensim
+pyvis
+pyLDAvis
+wordcloud
+ntlk
+tomotopy
+sklearn
+sentence_transformers
