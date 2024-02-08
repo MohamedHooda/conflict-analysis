@@ -7,7 +7,7 @@ def plot_correlation_heatmap(df, title):
     corr=df.corr()
     plt.figure(figsize=(8, 6))
     sns.heatmap(corr, annot=True, cmap='coolwarm', fmt='.2f', xticklabels=df.columns, yticklabels=df.columns)
-    plt.title('Correlation Heatmap of all tweets')
+    plt.title(title)
     plt.show()
     
 def barplot_multiple_dataframes(dataframes, labels, title, xlabel, ylabel, legend = True):
