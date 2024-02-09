@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from scipy.stats import chi2_contingency, f_oneway, ttest_ind, fisher_exact
+from scipy.stats import chi2_contingency, f_oneway, ttest_ind, fisher_exact, wilcoxon, mannwhitneyu
 
 def one_way_anova(*groups, alpha):
     # Perform one-way ANOVA
@@ -112,3 +112,18 @@ def fishers_exact_test(group1_labels, group2_labels, alpha):
         print("There is a significant difference between the groups.")
     else:
         print("There is no significant difference between the groups.")
+        
+def paired_mannwhitneyu_rank_test(sample1, sample2, alpha):
+
+    # Perform Wilcoxon signed-rank test
+    statistic, p_value = mannwhitneyu(sample1, sample2)
+
+    # Print the results
+    print("Mann-Whitney U statistic:", statistic)
+    print("p-value:", p_value)
+    
+    # Interpret the results
+    if p_value < alpha:
+        print("Reject the null hypothesis. There is a significant difference between the paired samples.")
+    else:
+        print("Fail to reject the null hypothesis. There is no significant difference between the paired samples.")        
